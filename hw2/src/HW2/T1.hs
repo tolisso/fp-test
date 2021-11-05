@@ -20,7 +20,7 @@ mapQuad g (Q x y z w) = Q (g x) (g y) (g z) (g w)
 
 
 infix 0 :#
-data Annotated e a = a :# e
+data Annotated e a = a :# e deriving Show
 
 mapAnnotated :: (a -> b) -> (Annotated e a -> Annotated e b)
 mapAnnotated g (x :# y) = g x :# y
@@ -47,7 +47,7 @@ data Stream a = a :> Stream a
 mapStream :: (a -> b) -> (Stream a -> Stream b)
 mapStream g (x :> stream) = (g x) :> mapStream g stream 
 
-
+ 
 infixr 5 :.
 data List a = Nil | a :. List a
 
