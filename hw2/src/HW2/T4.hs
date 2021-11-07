@@ -54,16 +54,23 @@ instance Fractional Expr where
     x / y = Op (Div x y)
     fromRational x = Val (fromRational x) 
 
-evalBinOperation :: Expr -> Expr -> (Double -> Double -> Double) -> 
-    (Double -> Double -> Prim Double) -> State [Prim Double] Double
+evalBinOperation :: 
+    Expr ->                                 -- first expression argument 
+    Expr ->                                 -- second expression argument 
+    (Double -> Double -> Double) ->         -- arithmetic operation
+    (Double -> Double -> Prim Double) ->    -- new state array element getter
+    State [Prim Double] Double              
 evalBinOperation x y f op = (do 
     a <- (eval x); 
     b <- (eval y); 
     modifyState ((:) (op a b)); 
     return $ f a b)
 
-evalUnOperation :: Expr -> (Double -> Double) -> 
-    (Double -> Prim Double) -> State [Prim Double] Double
+evalUnOperation :: 
+    Expr ->                                 -- expression argument
+    (Double -> Double) ->                   -- arithmetic operation 
+    (Double -> Prim Double) ->              -- new state array element getter
+    State [Prim Double] Double
 evalUnOperation x f op = (do 
     a <- (eval x); 
     modifyState ((:) (op a)); 
@@ -76,5 +83,5 @@ eval (Op (Sub x y)) = evalBinOperation x y (-) Sub
 eval (Op (Mul x y)) = evalBinOperation x y (*) Mul
 eval (Op (Div x y)) = evalBinOperation x y (/) Div
 eval (Op (Abs x)) = evalUnOperation x abs Abs
-eval (Op (Sgn x)) = evalUnOperation x signum Abs
+eval (Op (Sgn x)) = evalUnOperation x signum Sgn
 
