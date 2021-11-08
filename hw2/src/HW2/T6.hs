@@ -16,7 +16,7 @@ import GHC.Base (MonadPlus, Monoid)
 import qualified Data.Char
 import qualified Control.Monad
 import Data.Foldable
-import HW2.T4 (Expr)
+import HW2.T4
 
 data ParseError = ErrorAtPos Natural deriving Show
 
@@ -99,37 +99,46 @@ pDouble = mkP do
     (y, er) <- pInteger
     return $ toRealFloat (scientific x 0 + scientific y (-er))
 
-pVal :: [Parser (Double -> Double)] -> Parser Double
-pVal rPartPs = mkP do
+term :: Parser Expr 
+term = do 
     x <- pDouble
-    lit <- some (fold rPartPs)
-    return $ foldl (\acc op -> op acc) x lit
+    return $ Val x
 
-pRight :: (Double -> Double -> Double)
-    -> Char
-    -> [Parser Double]
-    -> Parser (Double -> Double)
-pRight op opCh rPartPs = do
-    pDefChar opCh
-    x <- fold rPartPs
-    return $ flip op x
+add :: Parser Expr
+add = do {
+        x <- mul;
+        y <- add';
+        return $ y x;
+    } 
 
-pLit :: Parser Double
-pLit = pVal [pLitRight]
-pTerm :: Parser Double
-pTerm = pVal [pTermRight]
+mul :: Parser Expr
+mul = do {
+        x <- term;
+        y <- mul';
+        return $ y x;
+    }
 
-pLitRight :: Parser (Double -> Double)
-pLitRight =
-    pRight (+) '+' [pDouble, pTerm]
+add' :: Parser (Expr -> Expr)
+add' = 
+    do {
+        pDefChar '+';
+        x <- mul;
+        y <- add';
+        return \a ->Op $ Add a (y x);
+    } 
     <|>
-    pRight (-) '-' [pDouble, pTerm]
+    return id
 
-pTermRight :: Parser (Double -> Double)
-pTermRight =
-    pRight (*) '*' [pDouble]
+mul' :: Parser (Expr -> Expr)
+mul' = 
+    do {
+        pDefChar '*';
+        x <- term;
+        y <- mul';
+        return \a -> Op $ Mul a (y x);
+    } 
     <|>
-    pRight (/) '/' [pDouble]
+    return id
 
-parseExpr :: String -> Except ParseError Double
-parseExpr str = runP (pLit <|> pTerm) str
+parseExpr :: String -> Except ParseError Expr
+parseExpr str = runP add str
