@@ -26,7 +26,7 @@ mapAnnotated :: (a -> b) -> (Annotated e a -> Annotated e b)
 mapAnnotated g (x :# y) = g x :# y
 
 
-data Except e a = Error e | Success a
+data Except e a = Error e | Success a deriving Show
 
 mapExcept :: (a -> b) -> (Except e a -> Except e b)
 mapExcept g (Success x) = Success $ g x

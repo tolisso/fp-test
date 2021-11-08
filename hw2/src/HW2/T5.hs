@@ -37,7 +37,7 @@ instance Monad (ExceptState e s) where
     x >>= y = joinExceptState $ fmap y x
 
 -- defining eval method
-data EvaluationError = DivideByZero
+data EvaluationError = DivideByZero deriving Show
 
 evalBinOperation :: 
     Expr ->                                 -- first expression argument 
