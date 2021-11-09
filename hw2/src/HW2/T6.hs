@@ -17,7 +17,7 @@ import GHC.Base (MonadPlus, Monoid)
 import qualified Control.Monad
 import HW2.T4
 
-data ParseError = ErrorAtPos Natural deriving Show
+data ParseError = ErrorAtPos Natural 
 
 newtype Parser a = P (ExceptState ParseError (Natural, String) a)
     deriving newtype (Functor, Applicative, Monad)
@@ -142,12 +142,12 @@ mul = pSpaceWrap $ do {
         return $ y x;
     }
 
-                                        -- parsing [x] [* y * ...] - parts
-op' :: Parser c                         -- first part parser
-    -> Parser (c -> b)                  -- second part parser
-    -> (a -> b -> Prim Expr)            -- expression constructor
+                                        -- parsing [+ x] [* y * ...] - parts
+op' :: Parser Expr                      -- first part parser
+    -> Parser (Expr -> Expr)            -- second part parser
+    -> (Expr -> Expr -> Prim Expr)      -- expression constructor
     -> Char                             -- expression operator
-    -> Parser (a -> Expr)
+    -> Parser (Expr -> Expr)
 op' curT nextT oper opCh = do {
             pDefChar opCh;
             pSpaces;
@@ -155,7 +155,7 @@ op' curT nextT oper opCh = do {
             pSpaces;
             y <- nextT;
             pSpaces;
-            return $ \a -> Op $ oper a (y x);
+            return \a -> y $ Op $ oper a x;
         }
 
 add' :: Parser (Expr -> Expr)

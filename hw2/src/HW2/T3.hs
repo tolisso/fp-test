@@ -13,7 +13,7 @@ joinExcept (Success (Error e)) = Error e
 joinExcept (Success (Success x)) = Success x
 
 joinAnnotated :: Semigroup e => Annotated e (Annotated e a) -> Annotated e a
-joinAnnotated ((x :# e1) :# e2) = x :# e1 <> e2;
+joinAnnotated ((x :# ei) :# eo) = x :# eo <> ei;
 
 joinList :: List (List a) -> List a
 joinList Nil = Nil

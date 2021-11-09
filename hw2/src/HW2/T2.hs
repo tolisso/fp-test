@@ -45,14 +45,14 @@ wrapExcept = Success
 
 
 distPrioritised :: (Prioritised a, Prioritised b) -> Prioritised (a, b)
-distPrioritised (High x, p) = mapPrioritised (x,) p
-distPrioritised (p, High y) = mapPrioritised (,y) p
+distPrioritised (Low x, p) = mapPrioritised (x,) p
+distPrioritised (p, Low y) = mapPrioritised (,y) p
 distPrioritised (Medium x, p) = mapPrioritised (x,) p
 distPrioritised (p, Medium y) = mapPrioritised (,y) p
-distPrioritised (Low x, Low y) = Low (x, y)
+distPrioritised (High x, High y) = High (x, y)
 
 wrapPrioritised :: a -> Prioritised a
-wrapPrioritised x = Medium x
+wrapPrioritised x = Low x
 
 
 distStream :: (Stream a, Stream b) -> Stream (a, b)
@@ -63,9 +63,11 @@ wrapStream x = x :> wrapStream x
 
 
 distList :: (List a, List b) -> List (a, b)
-distList (Nil, _) = Nil
-distList (_, Nil) = Nil
-distList (x :. xtail, y :. ytail) = (x, y) :. distList (xtail, ytail)
+distList (f, s) = distList' f s where
+    distList' _ Nil = Nil
+    distList' Nil (_ :. ytail) = distList' f ytail 
+    distList' (x :. xtail)  (y :. ytail) = 
+        (x, y) :. distList' xtail (y :. ytail)
 
 wrapList :: a -> List a
 wrapList x = x :. Nil

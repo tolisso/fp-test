@@ -20,13 +20,13 @@ mapQuad g (Q x y z w) = Q (g x) (g y) (g z) (g w)
 
 
 infix 0 :#
-data Annotated e a = a :# e deriving Show
+data Annotated e a = a :# e
 
 mapAnnotated :: (a -> b) -> (Annotated e a -> Annotated e b)
 mapAnnotated g (x :# y) = g x :# y
 
 
-data Except e a = Error e | Success a deriving Show
+data Except e a = Error e | Success a
 
 mapExcept :: (a -> b) -> (Except e a -> Except e b)
 mapExcept g (Success x) = Success $ g x

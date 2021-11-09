@@ -37,10 +37,9 @@ data Prim a =
   | Div a a      -- (/)
   | Abs a        -- abs
   | Sgn a        -- signum
-  deriving Show
 
 
-data Expr = Val Double | Op (Prim Expr) deriving Show
+data Expr = Val Double | Op (Prim Expr) 
 
 instance Num Expr where
   x + y = Op (Add x y)
