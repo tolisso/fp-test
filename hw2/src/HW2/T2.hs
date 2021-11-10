@@ -64,10 +64,10 @@ wrapStream x = x :> wrapStream x
 
 distList :: (List a, List b) -> List (a, b)
 distList (f, s) = distList' f s where
-    distList' _ Nil = Nil
-    distList' Nil (_ :. ytail) = distList' f ytail 
+    distList' Nil _ = Nil
+    distList' (_ :. xtail) Nil = distList' xtail s
     distList' (x :. xtail)  (y :. ytail) = 
-        (x, y) :. distList' xtail (y :. ytail)
+        (x, y) :. distList' (x :. xtail) ytail
 
 wrapList :: a -> List a
 wrapList x = x :. Nil
