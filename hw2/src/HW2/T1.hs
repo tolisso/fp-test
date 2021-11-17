@@ -59,7 +59,7 @@ mapList g (x :. rest) = g x :. mapList g rest
 newtype Fun i a = F (i -> a)
 
 mapFun :: (a -> b) -> (Fun i a -> Fun i b)
-mapFun f (F g) = F $ f <$> g 
+mapFun f (F g) = F $ f . g 
 
 data Tree a = Leaf | Branch (Tree a) a (Tree a)
 
