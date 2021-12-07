@@ -16,4 +16,4 @@ b_whnf = isSpace 'H' : map isSpace "ello, World"
 c :: [Char]
 c = if 1 > 0 || error "X" then "Y" else "Z"
 c_whnf :: [Char]
-c_whnf = "Y"
+c_whnf = ['Y']
